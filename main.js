@@ -33,16 +33,22 @@ function fieldDrawing() {
                 if (cells[`${key}`].isMissed) {
                     cell.classList.add('missed');
                 }
+                if (cells[`${key}`].isExploded) {
+                    cell.classList.add('exploded');
+                }
+                if (cells[`${key}`].isHide) {
+                    cell.classList.add('hide');
+                }
                 cell.setAttribute('id', `${key}`);
                 col.appendChild(cell);
             });
             col.classList.add('col');
             col.setAttribute('id', `${letter}`);
-            box.appendChild(col);
+            box.append(col);
         });
 
         resolve();
-    });
+    }).then(cellsListener)
 }
 
 
@@ -54,6 +60,7 @@ function createShips() {
 }
 
 btn.addEventListener('click', createShips)
+emulation.addEventListener('click', clickEmulation)
 
 
 
@@ -78,33 +85,45 @@ function fieldClear() {
     // return true;
 }
 
-/// Пока не очень нужна эта функция
+
 function cellClick(event) {
-    event = event.target;
-
-    console.log(event);
     
+    if (event.nodeType !== 1) {
+        event = event.target;
+    }
 
-    fieldDrawing().then(() => {
-        let cellsDOM = document.querySelectorAll('.cell');
-        cellsDOM.forEach(cell => {
-            cell.addEventListener('click', (event) => {
-                cellClick(event);
-            });
-        })
-    });
+    let cell = cells[`${event.id}`];
+    cell.isHide = false;
+
+    if (!cell.isShip) {
+        cell.isMissed = true;
+    } else if (cell.isShip) {
+        cell.isExploded = true;
+    }
+
+    fieldDrawing();
 }
 
-fieldDrawing().then(() => {
+
+
+
+function cellsListener() {    // Назначение обработчика событий (применяется каждый раз после отрисовки поля)
     let cellsDOM = document.querySelectorAll('.cell');
     cellsDOM.forEach(cell => {
         cell.addEventListener('click', (event) => {
-            cellClick(event);
+            cellClick(event);            
         });
     })
-});
+}
 
-
-
-
+function clickEmulation() {
+    let cell = document.getElementById(`${getRandomCell()}`);       
+    
+    if (cells[`${cell.id}`].isMissed || cells[`${cell.id}`].isExploded) {
+       console.log('repeat click');
+       
+       return clickEmulation();
+    }
+    return cellClick(cell);
+}
 

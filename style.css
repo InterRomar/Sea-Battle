@@ -58,7 +58,44 @@ body {
     transform: translateY(-4px) translateX(-4px);
 }
 
-
+.cell.exploded {
+    position: relative;
+}
+.cell.exploded::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 53px;
+    height: 2px;
+    background-color: red;
+    transform-origin: left;
+    transform: rotate(45deg);
+}
+.cell.exploded::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 53px;
+    height: 2px;
+    background-color: red;
+    transform-origin: left;
+    transform: rotate(-45deg);
+}
+.cell.hide {
+    position: relative;
+}
+.cell.hide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background-color: rgb(124, 199, 209); */
+    z-index: 10;
+}
 .letters-col {
     position: absolute;
     top: -40px;

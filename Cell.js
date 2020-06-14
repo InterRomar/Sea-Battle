@@ -7,6 +7,8 @@ class Cell {
       this.id = row + col;
       this.isShip = false;
       this.isMissed = false;
+      this.isExploded = false;
+      this.isHide = true;
     }
 
     // Определяем есть ли в клетках вокруг выбранной клетки корабли (количество клеток зависит от размера)
