@@ -35,4 +35,6 @@ class Ship {
         return fieldDrawing(cells, enemyBox);    
   
     }
+
+    
 }

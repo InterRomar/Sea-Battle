@@ -16,6 +16,7 @@ body {
     color: rgb(0, 132, 255);
     text-shadow: 3px 3px 5px rgba(0,0,0,0.5);
     box-shadow: 3px 3px 15px rgba(0,0,0,0.5);
+    margin: 20px 0;
 }
 
 .game-wrapper {
@@ -31,7 +32,9 @@ body {
 
     position: relative;
 }
-.enemy.blocked::after {
+
+
+.game-box.blocked::after {
     content: '';
     position: absolute;
     width: 100%;
@@ -41,7 +44,7 @@ body {
     z-index: 15;
     background-color: rgba(255,255,255, .7);
 }
-.enemy.blocked .cell{
+.game-box.blocked .cell{
     cursor: default;
 }
 
@@ -55,6 +58,9 @@ body {
 }
 .cell.ship {
     background-color: rgb(247, 157, 83);
+}
+.enemy .cell.ship.hide {
+    /* background: transparent; */
 }
 
 .cell.missed {
@@ -113,6 +119,11 @@ body {
     /* background-color: rgb(124, 199, 209); */
     z-index: 10;
 }
+
+.enemy .cell.hide::before {
+    /* background-color: rgb(124, 199, 209); */
+}
+
 .letters-col {
     position: absolute;
     top: -40px;
@@ -132,4 +143,24 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-family: 'Roboto';
+}
+
+
+.side-id {
+    position: absolute;
+    left: 50%;
+    bottom: -40px;
+    transform: translateX(-50%);
+
+    font-family: 'Roboto';
+    font-size: 25px;
+}
+
+.game-status {
+    margin-top: 0;
+    margin: 30px 0 50px;
+
+    font-family: 'Roboto';
+    font-size: 25px;
 }

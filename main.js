@@ -1,5 +1,6 @@
 let playerBox = document.querySelectorAll('.game-box')[0];
 let enemyBox = document.querySelectorAll('.game-box')[1];
+const gameStatus = document.querySelector('.game-status');
 
 let start = document.getElementById('start');
 
@@ -30,32 +31,59 @@ fieldDrawing(enemyCells, enemyBox).then(() => createShips(enemyCells, enemyBox))
 enemyBox.addEventListener('click', async (event) => {
     if (event.target.classList.contains('cell')) {
         let success = await cellClick(event.target);
+
+        if (isLastShip('enemy')) {
+            return victory();            
+        }
+
         if (!success) {
             enemyBox.classList.add('blocked');
+            gameStatus.innerHTML = 'Ход соперника!'
             return enemyShot();
         }  
                
     }
 } )
 
-start.addEventListener('click', async () => {
-    enemyShot();
-})
+
 
 async function enemyShot() {
     let success;
     setTimeout(async () => {
         success = await clickEmulation(playerCells);
     }, ENEMY_DELAY);
+
+    if (isLastShip('player')) {
+        return loosing();            
+    }
     
     setTimeout(() => {
         if (success) {
             return enemyShot();
         }
         enemyBox.classList.remove('blocked');
+        gameStatus.innerHTML = 'Ваш ход!'
     }, ENEMY_DELAY);
     
 }
+
+function isLastShip(side) {
+    return ships[side].every(ship => ship.cells.every(cell => cell.isExploded));
+}
+
+function victory() {
+    gameStatus.innerHTML = 'Вы Победили!';
+    enemyBox.classList.add('blocked');
+    playerBox.classList.add('blocked');
+
+}
+
+function loosing() {
+    gameStatus.innerHTML = 'Вы проиграли!';
+    playerBox.classList.add('blocked');
+    enemyBox.classList.add('blocked');
+}
+
 
 
 // функция рисования клеток
@@ -125,8 +153,6 @@ function cellClick(event, cells = enemyCells) {
         
         ship.checkState(cells);
     }  
-    
-    
 
     if (cells[side] === 'player') {
         return fieldDrawing(cells, playerBox, success);    
@@ -170,13 +196,6 @@ function createShips(cells, box) {
     createQuadrupleShip(cells, box);
 }
 let container = document.getElementById('container');
-
-
-
-emulation.addEventListener('click', () => {
-    clickEmulation(playerCells)
-});
-
 
 
 function rightHit(x, y, cells) {
@@ -225,9 +244,3 @@ function getRandomCell() {
 function getRandom(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
-
-
-// document.onload = function {
- 
-//     container.style.backgroundColor = 'red';
-// }
