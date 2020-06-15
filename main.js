@@ -1,6 +1,8 @@
 const playerBox = document.querySelectorAll('.game-box')[0];
 const enemyBox = document.querySelectorAll('.game-box')[1];
 const gameStatus = document.querySelector('.game-status');
+const autoCreateBtn = document.getElementById('auto-create-btn');
+let creatingInfo = document.querySelector('.ships-creating__info');
 
 let start = document.getElementById('start');
 
@@ -13,6 +15,7 @@ let enemyCells = {};
 enemyCells[side] = 'enemy';
 let ships = {};
 
+let isShipPlaced = false;
 
 const ENEMY_DELAY = 1000;  // Задержка, с которой ai будет выполнять действия (в ms)
 
@@ -24,11 +27,27 @@ letters.forEach((letter, idx) => {
     }
 });
 
+
+
 // Отрисовка всех клеток-объектов
-fieldDrawing(playerCells, playerBox).then(() => createShips(playerCells, playerBox));
+fieldDrawing(playerCells, playerBox).then(() => {
+    autoCreateBtn.addEventListener('click', () => {
+        createShips(playerCells, playerBox);
+        autoCreateBtn.disabled = true;
+        isShipPlaced = true;
+        creatingInfo.innerHTML = 'Приятной игры.';
+        gameStatus.innerHTML = 'Для начала игры просто сделайте первый выстрел!'
+    });
+});
 fieldDrawing(enemyCells, enemyBox).then(() => createShips(enemyCells, enemyBox));
 
+
 enemyBox.addEventListener('click', async (event) => {
+    if (!isShipPlaced) {
+        gameStatus.innerHTML = 'Для начала установите корабли';
+        return;
+    }
+
     if (event.target.classList.contains('cell')) {
         let success = await cellClick(event.target);
         if (success === undefined) return
@@ -40,13 +59,23 @@ enemyBox.addEventListener('click', async (event) => {
 
         if (!success) {
             enemyBox.classList.add('blocked');
-            gameStatus.innerHTML = 'Ход соперника!'
+            gameStatus.innerHTML = 'Ход соперника!';
             return enemyShot();
         }  
                
     }
 } )
 
+enemyBox.addEventListener('mouseover', (event) => {
+    if (event.target.classList.contains('cell')) {
+        event.target.classList.add('hover');
+    }
+});
+enemyBox.addEventListener('mouseout', (event) => {
+    if (event.target.classList.contains('hover')) {
+        event.target.classList.remove('hover');
+    }
+});
 
 
 async function enemyShot() {
