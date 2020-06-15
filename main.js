@@ -1,8 +1,7 @@
 let playerBox = document.querySelectorAll('.game-box')[0];
 let enemyBox = document.querySelectorAll('.game-box')[1];
-// let box = document.querySelectorAll('.game-box')[1];
-let playerBtn = document.getElementById('playerBtn');
-let enemyBtn = document.getElementById('enemyBtn');
+
+let start = document.getElementById('start');
 
 let letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
 let side = Symbol();
@@ -14,6 +13,8 @@ enemyCells[side] = 'enemy';
 let ships = {};
 
 
+const ENEMY_DELAY = 1000;  // Задержка, с которой ai будет выполнять действия (в ms)
+
 // Создание массива объектов cells
 letters.forEach((letter, idx) => {
     for (let i = 1; i <= 10; i++) {
@@ -23,26 +24,42 @@ letters.forEach((letter, idx) => {
 });
 
 // Отрисовка всех клеток-объектов
-fieldDrawing(playerCells, playerBox);
-fieldDrawing(enemyCells, enemyBox);
+fieldDrawing(playerCells, playerBox).then(() => createShips(playerCells, playerBox));
+fieldDrawing(enemyCells, enemyBox).then(() => createShips(enemyCells, enemyBox));
 
-enemyBox.addEventListener('click', (event) => {
+enemyBox.addEventListener('click', async (event) => {
     if (event.target.classList.contains('cell')) {
-        cellClick(event.target);
+        let success = await cellClick(event.target);
+        if (!success) {
+            enemyBox.classList.add('blocked');
+            return enemyShot();
+        }  
+               
     }
 } )
 
+start.addEventListener('click', async () => {
+    enemyShot();
+})
 
-
-function cellsListener() {    // Назначение обработчика событий (применяется каждый раз после отрисовки поля)
-    let cellsDOM = document.querySelectorAll('.cell');
-    cellsDOM.forEach(cell => {
-        cell.addEventListener('click', cellClick);
-    })
+async function enemyShot() {
+    let success;
+    setTimeout(async () => {
+        success = await clickEmulation(playerCells);
+    }, ENEMY_DELAY);
+    
+    setTimeout(() => {
+        if (success) {
+            return enemyShot();
+        }
+        enemyBox.classList.remove('blocked');
+    }, ENEMY_DELAY);
+    
 }
 
+
 // функция рисования клеток
-function fieldDrawing(cells, box) {   
+function fieldDrawing(cells, box, success) {   
     
     fieldClear(cells);    
 
@@ -72,7 +89,7 @@ function fieldDrawing(cells, box) {
             box.append(col);
         });
 
-        resolve();
+        resolve(success);
     });
 }
 
@@ -92,6 +109,7 @@ function cellClick(event, cells = enemyCells) {
         return
     }
 
+    let success = false;
     cell.isHide = false;
     let x = letters.indexOf(cell.row),
         y = Number(cell.col);
@@ -99,12 +117,11 @@ function cellClick(event, cells = enemyCells) {
     if (!cell.isShip) {
         cell.isMissed = true;
     } else if (cell.isShip) {
+        success = true;
         cell.isExploded = true;
         rightHit(x, y, cells);
 
         let ship = cell.identifyShip(cells[side].toString());
-
-        console.log(ship);
         
         ship.checkState(cells);
     }  
@@ -112,10 +129,10 @@ function cellClick(event, cells = enemyCells) {
     
 
     if (cells[side] === 'player') {
-        return fieldDrawing(cells, playerBox);    
+        return fieldDrawing(cells, playerBox, success);    
     }
     
-    return fieldDrawing(cells, enemyBox);    
+    return fieldDrawing(cells, enemyBox, success);    
 }
 
 
@@ -146,52 +163,19 @@ function fieldClear(cells) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function createShips(cells, box) {
     createSingleShips(cells, box);
     createDoubleShips(cells, box);
     createTripleShips(cells, box);
     createQuadrupleShip(cells, box);
 }
+let container = document.getElementById('container');
 
-playerBtn.addEventListener('click', () => {
-    createShips(playerCells, playerBox)
-});
-enemyBtn.addEventListener('click', () => {
-    createShips(enemyCells, enemyBox)
-});
+
+
 emulation.addEventListener('click', () => {
     clickEmulation(playerCells)
 });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -241,3 +225,9 @@ function getRandomCell() {
 function getRandom(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
+
+
+// document.onload = function {
+ 
+//     container.style.backgroundColor = 'red';
+// }

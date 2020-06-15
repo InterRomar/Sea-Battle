@@ -6,7 +6,6 @@ class Ship {
     }
 
     checkState(cells) {
-        console.log('check state');
         if (this.cells.every(cell => cell.isExploded === true)) {       // Если все клетки корабля уже взорваны
             
             this.blowUpShip(cells);            
