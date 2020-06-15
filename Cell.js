@@ -13,29 +13,12 @@ class Cell {
 
     // Определяем есть ли в клетках вокруг выбранной клетки корабли (количество клеток зависит от размера)
     // Принимает два параметра (size, position); size - размер корабля от 1 до 4, position (1 | 0) 0 - вертикально, 1 - горизонтально 
-    checkZone(size, position) {       
+    checkZone(size, position, cells) {       
         let x = letters.indexOf(this.row);
         let y = +this.col;
 
-        // Координаты восьми клеток вокруг выбранной клетки
-        const coordinates = {
-          single: {
-            vertical: [[x - 1, y - 1], [x, y - 1], [x + 1, y - 1 ], [x - 1, y],[x, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1, y + 1]]
-          },
-          double: {
-            vertical: [[x - 1, y - 1], [x, y - 1], [x + 1, y - 1 ], [x - 1, y],[x, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x - 1, y + 2], [x, y + 2], [x + 1, y + 2]],
-            horizontal: [[x - 1, y - 1], [x, y - 1], [x + 1, y - 1 ], [x - 1, y],[x, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x + 2, y - 1], [x + 2, y], [x + 2, y + 1]]
-          },
-          triple: {
-            vertical: [[x - 1, y - 1], [x, y - 1], [x + 1, y - 1 ], [x - 1, y],[x, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x - 1, y + 2], [x, y + 2], [x + 1, y + 2],[x - 1, y + 3], [x, y + 3], [x + 1, y + 3]],
-            horizontal: [[x - 1, y - 1], [x, y - 1], [x + 1, y - 1 ], [x - 1, y],[x, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x + 2, y - 1], [x + 2, y], [x + 2, y + 1], [x + 3, y - 1], [x + 3, y], [x + 3, y + 1]]
-          },
-          quadruple: {
-            vertical: [[x - 1, y - 1], [x, y - 1], [x + 1, y - 1 ], [x - 1, y],[x, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x - 1, y + 2], [x, y + 2], [x + 1, y + 2], [x - 1, y + 3], [x, y + 3], [x + 1, y + 3],[x - 1, y + 4], [x, y + 4], [x + 1, y + 4]],
-            horizontal: [[x - 1, y - 1], [x, y - 1], [x + 1, y - 1 ], [x - 1, y],[x, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x + 2, y - 1], [x + 2, y], [x + 2, y + 1], [x + 3, y - 1], [x + 3, y], [x + 3, y + 1], [x + 4, y - 1], [x + 4, y], [x + 4, y + 1]]
-          },
-        };
-
+        let coordinates = getCoordinates(x, y);
+        
         if (position === 0) {
           position = 'vertical';
         } else {
@@ -57,4 +40,33 @@ class Cell {
     
         return result;
     }
+
+    identifyShip(side) {
+      if (ships[side].filter(ship => ship.cells.includes(this))) {
+        return ships[side].filter(ship => ship.cells.includes(this))[0];
+      }
+    }
+}
+
+function getCoordinates(x, y) {
+        // Координаты клеток вокруг выбранной клетки для разных размеров кораблей
+        const coordinates = {
+          single: {
+            vertical: [[x - 1, y - 1], [x, y - 1], [x + 1, y - 1 ], [x - 1, y],[x, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1, y + 1]]
+          },
+          double: {
+            vertical: [[x - 1, y - 1], [x, y - 1], [x + 1, y - 1 ], [x - 1, y],[x, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x - 1, y + 2], [x, y + 2], [x + 1, y + 2]],
+            horizontal: [[x - 1, y - 1], [x, y - 1], [x + 1, y - 1 ], [x - 1, y],[x, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x + 2, y - 1], [x + 2, y], [x + 2, y + 1]]
+          },
+          triple: {
+            vertical: [[x - 1, y - 1], [x, y - 1], [x + 1, y - 1 ], [x - 1, y],[x, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x - 1, y + 2], [x, y + 2], [x + 1, y + 2],[x - 1, y + 3], [x, y + 3], [x + 1, y + 3]],
+            horizontal: [[x - 1, y - 1], [x, y - 1], [x + 1, y - 1 ], [x - 1, y],[x, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x + 2, y - 1], [x + 2, y], [x + 2, y + 1], [x + 3, y - 1], [x + 3, y], [x + 3, y + 1]]
+          },
+          quadruple: {
+            vertical: [[x - 1, y - 1], [x, y - 1], [x + 1, y - 1 ], [x - 1, y],[x, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x - 1, y + 2], [x, y + 2], [x + 1, y + 2], [x - 1, y + 3], [x, y + 3], [x + 1, y + 3],[x - 1, y + 4], [x, y + 4], [x + 1, y + 4]],
+            horizontal: [[x - 1, y - 1], [x, y - 1], [x + 1, y - 1 ], [x - 1, y],[x, y], [x + 1, y], [x - 1, y + 1], [x, y + 1], [x + 1, y + 1], [x + 2, y - 1], [x + 2, y], [x + 2, y + 1], [x + 3, y - 1], [x + 3, y], [x + 3, y + 1], [x + 4, y - 1], [x + 4, y], [x + 4, y + 1]]
+          },
+        };
+        
+        return coordinates;
 }

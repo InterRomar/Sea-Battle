@@ -32,11 +32,13 @@ body {
     position: relative;
 }
 
+.enemy .cell {
+    cursor: pointer;
+}
 .cell {
     width: 38px;
     height: 38px;
     border: 1px solid #ccc;
-
 }
 .cell.ship {
     background-color: rgb(247, 157, 83);
@@ -44,6 +46,7 @@ body {
 
 .cell.missed {
     position: relative;
+    cursor: default;
 }
 .cell.missed::before {
     content: '';
@@ -60,6 +63,7 @@ body {
 
 .cell.exploded {
     position: relative;
+    cursor: default;
 }
 .cell.exploded::before {
     content: '';

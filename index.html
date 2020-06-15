@@ -11,10 +11,12 @@
     
     <div class="container">
         <h1 class="main-title">Sea Battle</h1>
-        <button id="btn">Test</button>
+        <button id="playerBtn">Create Player ships</button>
+        <button id="enemyBtn">Create enemy ships</button>
+        <br>
         <button id="emulation">Emulation</button>
         <div class="game-wrapper">
-            <div class="game-box">
+            <div class="game-box player">
                 <div class="letters-col">
                     <span class="letters-col__item">A</span>
                     <span class="letters-col__item">B</span>
@@ -40,7 +42,7 @@
                     <span class="numbers-row__item">10</span>
                 </div>
             </div>
-            <div class="game-box">
+            <div class="game-box enemy">
                 <div class="letters-col">
                     <span class="letters-col__item">A</span>
                     <span class="letters-col__item">B</span>
@@ -70,6 +72,7 @@
     </div>
 
 
+    <script src="Ship.js"></script>
     <script src="shipsFunctions.js"></script>
     <script src="Cell.js"></script>
     <script src="main.js"></script>
