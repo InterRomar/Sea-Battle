@@ -1,5 +1,5 @@
-let playerBox = document.querySelectorAll('.game-box')[0];
-let enemyBox = document.querySelectorAll('.game-box')[1];
+const playerBox = document.querySelectorAll('.game-box')[0];
+const enemyBox = document.querySelectorAll('.game-box')[1];
 const gameStatus = document.querySelector('.game-status');
 
 let start = document.getElementById('start');
@@ -31,6 +31,8 @@ fieldDrawing(enemyCells, enemyBox).then(() => createShips(enemyCells, enemyBox))
 enemyBox.addEventListener('click', async (event) => {
     if (event.target.classList.contains('cell')) {
         let success = await cellClick(event.target);
+        if (success === undefined) return
+        
 
         if (isLastShip('enemy')) {
             return victory();            
@@ -93,7 +95,7 @@ function fieldDrawing(cells, box, success) {
 
     return new Promise(resolve => {
         letters.forEach((letter, idx) => {
-            let col = document.createElement('div');
+            let row = document.createElement('div');
             Object.keys(cells).filter(key => cells[`${key}`].row === letter).forEach(key => {
                 let cell = document.createElement('div');
                 cell.classList.add('cell');
@@ -109,12 +111,12 @@ function fieldDrawing(cells, box, success) {
                 if (cells[`${key}`].isHide) {
                     cell.classList.add('hide');
                 }
-                cell.setAttribute('id', `${key}`);
-                col.appendChild(cell);
+                cell.dataset.id = key;
+                row.appendChild(cell);
             });
-            col.classList.add('col');
-            col.setAttribute('id', `${letter}`);
-            box.append(col);
+            row.classList.add('row');
+            row.dataset.id = letter;
+            box.append(row);
         });
 
         resolve(success);
@@ -130,7 +132,7 @@ function cellClick(event, cells = enemyCells) {
         
     }
    
-    let cell = cells[`${event.id}`];
+    let cell = cells[`${event.dataset.id}`];
     
     if (cell.isMissed || cell.isExploded) {
         console.log(`repeat click, return null `);
@@ -161,29 +163,34 @@ function cellClick(event, cells = enemyCells) {
     return fieldDrawing(cells, enemyBox, success);    
 }
 
+function findCellById(id, side) {     // функция возвращает node элемент
+    let cells = document.querySelectorAll(`.${side} .cell`);
+    return Array.from(cells).find(cell => cell.dataset.id === id);
+}
+
 
 function clickEmulation(cells) {
-    let cell = document.querySelector(`.player #${getRandomCell()}`);       
+    let cell = getRandomCell();
     
-    if (cells[`${cell.id}`].isMissed || cells[`${cell.id}`].isExploded) {
+    if (cells[cell].isMissed || cells[cell].isExploded) {
        return clickEmulation(cells);
     }
     
-    return cellClick(cell, playerCells);
+    return cellClick(findCellById(cell, cells[side].toString()), playerCells);
 }
 
 // Функция очистки поля
 function fieldClear(cells) {
     
     if (cells[side] === 'player') {
-        let cols = document.querySelectorAll('.player .col');
-        if (cols) {
-            cols.forEach(col => col.remove());
+        let rows = document.querySelectorAll('.player .row');
+        if (rows) {
+            rows.forEach(col => col.remove());
         }
     } else {
-        let cols = document.querySelectorAll('.enemy .col');
-        if (cols) {
-            cols.forEach(col => col.remove());
+        let rows = document.querySelectorAll('.enemy .row');
+        if (rows) {
+            rows.forEach(col => col.remove());
         } 
     }
 }
