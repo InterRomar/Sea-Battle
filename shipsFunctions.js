@@ -16,18 +16,17 @@ function createSingleShips(cells, box, times, selectedCell) {
             cell = selectedCell;
         }
         
-        if (cells[side] === 'player') {        
+        
+        
+        if (cells[side] === 'player' && selectedCell) {        
             if (!cells[`${cell}`].checkZone(size, 0, cells)) {
                 console.log('в этом месте установить нельзя');
-                return;     // alert с сообщением
+                return false;     // alert с сообщением
             }
         }
             
         
         if (cells[`${cell}`].checkZone(size, 0, cells)) {       // Если эта клетка не соприкасается с другими кораблями, делаем из неё корабль
-            if (cells[side.toString()] === 'player') {
-                console.log('sdafsdf');
-            }
             cells[`${cell}`].isShip = true;
             cells[`${cell}`].size = 1;           
             cellsArr.push(cells[`${cell}`]);
@@ -39,6 +38,7 @@ function createSingleShips(cells, box, times, selectedCell) {
     }    
     
     fieldDrawing(cells, box);
+    return true;
 }
 
 function createDoubleShips(cells, box, times, selectedCell) {
@@ -53,26 +53,27 @@ function createDoubleShips(cells, box, times, selectedCell) {
     while (count !== times) {           // Рисуем 3 корабля
 
         let cell;
+        let position;
         if (!selectedCell) {
             cell = getRandomCell();       // Получаем рандомную клетку
+            position = getRandom(2);        // Рандомное положение (0 - вертикальное, 1 - горизонтальное)
         } else {
             cell = selectedCell;
+            position = 1;
         }
-        let position = getRandom(2);        // Рандомное положение (0 - вертикальное, 1 - горизонтальное)
         let letter = cell[0];                 // Буква клетки
         let number = cell.match(/\d/gi).join('');     // № Клетки 
         let letterIndex = letters.indexOf(letter);
         
-        if (cells[side] === 'player') {        
+        if (cells[side] === 'player' && selectedCell) {        
             if (!cells[`${cell}`].checkZone(size, 0, cells)) {
                 console.log('в этом месте установить нельзя');
                 return;     // alert с сообщением
             }
         }
 
+
         if (cells[`${cell}`].checkZone(size, position, cells)) {         // Если вокруг клетки нет кораблей, рисуем, если есть - то новая итерация
-            
-            
             // Если вертикальный, сразу проверяем хватит ли клеток вниз (чтобы не упереться в конец поля)
             if (position === 0 && (Number(number) + 1) <= 10 ) {       
                 cells[`${cell}`].isShip = true;       // Выбранная клетка становится кораблём
@@ -96,16 +97,12 @@ function createDoubleShips(cells, box, times, selectedCell) {
                 cellsArr = [];
                 count++;
 
-            } else {
-                if (cells[side.toString()] === 'player') {
-                    console.log('в этом месте установить нельзя');
-                    break;
-                }
             }
             
         }
                 
         fieldDrawing(cells, box);     
+        return true;
     }
 }
 function createTripleShips(cells, box, times, selectedCell) {
@@ -120,22 +117,25 @@ function createTripleShips(cells, box, times, selectedCell) {
     while (count !== times) {
         
         let cell;
+        let position;
         if (!selectedCell) {
             cell = getRandomCell();       // Получаем рандомную клетку
+            position = getRandom(2);        // Рандомное положение (0 - вертикальное, 1 - горизонтальное)
         } else {
             cell = selectedCell;
+            position = 1;
         }
-        let position = getRandom(2);
+        
         let letter = cell[0];
         let number = cell.match(/\d/gi).join('');
         let letterIndex = letters.indexOf(letter);
 
-        if (cells[side] === 'player') {        
-            if (!cells[`${cell}`].checkZone(size, 0, cells)) {
-                console.log('в этом месте установить нельзя');
-                return;     // alert с сообщением
-            }
-        }
+        // if (cells[side] === 'player') {        
+        //     if (!cells[`${cell}`].checkZone(size, 0, cells)) {
+        //         console.log('в этом месте установить нельзя');
+        //         return;     // alert с сообщением
+        //     }
+        // }
         
         if (cells[`${cell}`].checkZone(size, position,cells)) {
             if (position === 0 && (Number(number) + 2) <= 10 ) {                
@@ -164,17 +164,13 @@ function createTripleShips(cells, box, times, selectedCell) {
                 ships[`${cells[side].toString()}`].push(new Ship(size, cellsArr, 'horizontal'));
                 cellsArr = [];
                 count++;
-            } else {
-                if (cells[side.toString()] === 'player') {
-                    console.log('в этом месте установить нельзя');
-                    break;
-                }
             }
             
         }
     
         
-        fieldDrawing(cells, box);     
+        fieldDrawing(cells, box);  
+        return true;   
     }
 }
 function createQuadrupleShip(cells, box, times, selectedCell) {
@@ -188,12 +184,14 @@ function createQuadrupleShip(cells, box, times, selectedCell) {
     
     while (count !== 1) {
         let cell;
+        let position;
         if (!selectedCell) {
             cell = getRandomCell();       // Получаем рандомную клетку
+            position = getRandom(2);        // Рандомное положение (0 - вертикальное, 1 - горизонтальное)
         } else {
             cell = selectedCell;
+            position = 1;
         }
-        let position = getRandom(2);
         let letter = cell[0];
         let number = cell.match(/\d/gi).join('');
         let letterIndex = letters.indexOf(letter);
@@ -238,15 +236,11 @@ function createQuadrupleShip(cells, box, times, selectedCell) {
                 ships[`${cells[side].toString()}`].push(new Ship(size, cellsArr, 'horizontal'));
                 cellsArr = [];
                 count++;
-            } else {
-                if (cells[side.toString()] === 'player') {
-                    console.log('в этом месте установить нельзя');
-                    break;
-                }
-            }
+            } 
         }
         
         
-        fieldDrawing(cells, box);     
+        fieldDrawing(cells, box);  
+        return true;   
     }
 }

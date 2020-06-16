@@ -2,8 +2,8 @@ const playerBox = document.querySelectorAll('.game-box')[0];
 const enemyBox = document.querySelectorAll('.game-box')[1];
 const gameStatus = document.querySelector('.game-status');
 const autoCreateBtn = document.getElementById('auto-create-btn');
-const customCreateButtons = document.querySelector('.ships-creating__buttons');
-let creatingInfo = document.querySelector('.ships-creating__info');
+
+
 
 let start = document.getElementById('start');
 
@@ -34,37 +34,10 @@ letters.forEach((letter, idx) => {
 fieldDrawing(playerCells, playerBox).then(() => {
     autoCreateBtn.addEventListener('click', () => {
         createShips(playerCells, playerBox);
-        autoCreateBtn.disabled = true;
-        isShipPlaced = true;
-        creatingInfo.innerHTML = 'Приятной игры.';
-        gameStatus.innerHTML = 'Для начала игры просто сделайте первый выстрел!';
-        playerBox.classList.remove('pre-launch');
+        creatingFinish()
     });
 });
-fieldDrawing(enemyCells, enemyBox).then(() => createShips(enemyCells, enemyBox, 4));
-
-let isCreationStage = false;
-let actualCreatingSize;
-
-customCreateButtons.addEventListener('click', (event) => {
-    event = event.target;
-    if (!event.classList.contains('ships-creating__btn-block')) return;
-
-    isCreationStage = true;
-    actualCreatingSize = event.parentNode.dataset.size;
-    
-});
-
-playerBox.addEventListener('click', (event) => {
-    let sizes = ['single', 'double', 'triple', 'quadruple'];
-    if (isCreationStage) {
-        event = event.target;
-        if (!event.classList.contains('cell')) return;
-
-        
-    }
-});
-
+fieldDrawing(enemyCells, enemyBox).then(() => createShips(enemyCells, enemyBox));
 
 
 
@@ -263,8 +236,8 @@ function fieldClear(cells) {
 function createShips(cells, box) {
     createSingleShips(cells, box, 4);
     createDoubleShips(cells, box, 3);
-    createTripleShips(cells, box, 2);
-    createQuadrupleShip(cells, box);
+    // createTripleShips(cells, box, 2);
+    // createQuadrupleShip(cells, box);
 }
 
 
@@ -313,4 +286,125 @@ function getRandomCell() {
 
 function getRandom(max) {
     return Math.floor(Math.random() * Math.floor(max));
+}
+
+
+
+const customCreateButtons = document.querySelector('.ships-creating__buttons');
+let creatingCountSpans = Array.from(document.querySelectorAll('.ships-creating__count'));
+let isCreationStage = true;
+let isCreatingShip = false;
+let actualCreatingSize;
+
+let shipsCreatingCount = {
+    single: 4,
+    double: 3,
+    triple: 2,
+    quadruple: 1,
+
+    getSum() {
+        return this.single + this.double + this.triple + this.quadruple;
+    }
+}
+
+customCreateButtons.addEventListener('click', (event) => {
+    event = event.target;
+    if (!event.classList.contains('ships-creating__btn-block')) return;
+
+    const textSizeArr = ['одно', 'двух', 'трёх', 'четырёх'];
+
+    if (isCreationStage) {
+        if (Number(event.parentNode.lastElementChild.innerHTML) > 0) {
+            isCreatingShip = true;
+            actualCreatingSize = Number(event.parentNode.dataset.size);
+            gameStatus.innerHTML = `Установка ${textSizeArr[actualCreatingSize - 1]}палубного корабля..`;
+            
+        } else {
+            gameStatus.innerHTML = `Вы установили максимальное количество ${textSizeArr[Number(event.parentNode.dataset.size) - 1]}палубных кораблей!`
+        }
+    }
+    
+    
+    
+});
+
+playerBox.addEventListener('click', (event) => {
+
+    if (isCreationStage) {
+        event = event.target;        
+        if (!event.classList.contains('cell')) return;
+
+        let success = false;
+
+        if (!isCreatingShip || !actualCreatingSize) {
+            gameStatus.innerHTML = 'Вы не выбрали размер корабля для установки!';
+            return;            
+        }
+
+        switch (actualCreatingSize) {
+            case 1:
+                if (createSingleShips(playerCells, playerBox, 1, event.dataset.id)) {
+                    isCreatingShip = false;
+                    actualCreatingSize = 0;
+                    success = true;
+                    creatingCountSpans.find(btn => btn.parentNode.dataset.size === String(1)).innerHTML = --shipsCreatingCount.single;   
+                }
+                break;
+            case 2:
+                if (createDoubleShips(playerCells, playerBox, 2, event.dataset.id)) {
+                    isCreatingShip = false;
+                    actualCreatingSize = 0;
+                    success = true;
+                    creatingCountSpans.find(btn => btn.parentNode.dataset.size === String(2)).innerHTML = --shipsCreatingCount.double;
+                    
+                }
+                break;
+            case 3:
+                if (createTripleShips(playerCells, playerBox, 3, event.dataset.id)) {
+                    isCreatingShip = false;
+                    actualCreatingSize = 0;
+                    success = true;
+                    creatingCountSpans.find(btn => btn.parentNode.dataset.size === String(3)).innerHTML = --shipsCreatingCount.triple;
+                    
+                }
+                break;
+            case 4:
+                if (createQuadrupleShip(playerCells, playerBox, 4, event.dataset.id)) {
+                    isCreatingShip = false;
+                    actualCreatingSize = 0;
+                    success = true;
+                    creatingCountSpans.find(btn => btn.parentNode.dataset.size === String(4)).innerHTML = --shipsCreatingCount.quadruple;
+                    
+                }
+                break;
+        
+            default:
+                break;
+        }
+
+        if (success) {
+            if (shipsCreatingCount.getSum() === 0) {
+                return creatingFinish();
+            } 
+            gameStatus.innerHTML = `Продолжайте расстановку кораблей!`;
+            return
+        }
+
+        gameStatus.innerHTML = 'Здесь установить корабль нельзя! Попробуйте снова'
+        isCreatingShip = false;
+        actualCreatingSize = 0;
+
+
+    }
+});
+
+
+function creatingFinish() {
+    gameStatus.innerHTML = 'Расстановка завершена. Для начала игры сделайте первый выстрел!';
+    autoCreateBtn.disabled = true;
+    isShipPlaced = true;
+    isCreationStage = false;
+    playerBox.classList.remove('pre-launch');
+    creatingCountSpans.forEach(span => span.innerHTML = '0')
+    customCreateButtons.classList.add('blocked');
 }
