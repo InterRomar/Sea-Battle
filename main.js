@@ -2,19 +2,20 @@ const playerBox = document.querySelectorAll('.game-box')[0];
 const enemyBox = document.querySelectorAll('.game-box')[1];
 const gameStatus = document.querySelector('.game-status');
 const autoCreateBtn = document.getElementById('auto-create-btn');
+const customCreateButtons = document.querySelector('.ships-creating__buttons');
 let creatingInfo = document.querySelector('.ships-creating__info');
 
 let start = document.getElementById('start');
 
 let letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
-let side = Symbol();
-
 let playerCells = {};
-playerCells[side] = 'player';
 let enemyCells = {};
-enemyCells[side] = 'enemy';
-let ships = {};
 
+let side = Symbol();
+playerCells[side] = 'player';
+enemyCells[side] = 'enemy';
+
+let ships = {};
 let isShipPlaced = false;
 
 const ENEMY_DELAY = 1000;  // Задержка, с которой ai будет выполнять действия (в ms)
@@ -36,10 +37,44 @@ fieldDrawing(playerCells, playerBox).then(() => {
         autoCreateBtn.disabled = true;
         isShipPlaced = true;
         creatingInfo.innerHTML = 'Приятной игры.';
-        gameStatus.innerHTML = 'Для начала игры просто сделайте первый выстрел!'
+        gameStatus.innerHTML = 'Для начала игры просто сделайте первый выстрел!';
+        playerBox.classList.remove('pre-launch');
     });
 });
-fieldDrawing(enemyCells, enemyBox).then(() => createShips(enemyCells, enemyBox));
+fieldDrawing(enemyCells, enemyBox).then(() => createShips(enemyCells, enemyBox, 4));
+
+let isCreationStage = false;
+let actualCreatingSize;
+
+customCreateButtons.addEventListener('click', (event) => {
+    event = event.target;
+    if (!event.classList.contains('ships-creating__btn-block')) return;
+
+    isCreationStage = true;
+    actualCreatingSize = event.parentNode.dataset.size;
+    
+});
+
+playerBox.addEventListener('click', (event) => {
+    let sizes = ['single', 'double', 'triple', 'quadruple'];
+    if (isCreationStage) {
+        event = event.target;
+        if (!event.classList.contains('cell')) return;
+
+        
+    }
+});
+
+
+
+
+function getCellCoordinates(cell) {
+        
+    return {
+        x: letters.indexOf(cell.row),
+        y: Number(cell.col)
+    };
+}
 
 
 enemyBox.addEventListener('click', async (event) => {
@@ -226,12 +261,11 @@ function fieldClear(cells) {
 
 
 function createShips(cells, box) {
-    createSingleShips(cells, box);
-    createDoubleShips(cells, box);
-    createTripleShips(cells, box);
+    createSingleShips(cells, box, 4);
+    createDoubleShips(cells, box, 3);
+    createTripleShips(cells, box, 2);
     createQuadrupleShip(cells, box);
 }
-let container = document.getElementById('container');
 
 
 function rightHit(x, y, cells) {

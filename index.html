@@ -5,23 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sea Battle</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@100;200;300;400&family=Montserrat&family=Roboto&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/cd26113552.js" crossorigin="anonymous"></script>
+    <!-- <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@100;200;300;400&family=Montserrat&family=Roboto&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/cd26113552.js" crossorigin="anonymous"></script> -->
 </head>
 <body>
     
     <div class="container" id='container'>
         <h1 class="main-title">Sea Battle</h1>
-        <p class="game-status">Для начала игры просто сделайте первый выстрел!</p>
+        <p class="game-status">Для начала игры установите корабли вручную или автоматически</p>
         <div class="ships-creating">
             <button class="ships-creating__btn" id='auto-create-btn'>Расставить корабли автоматически</button>
             <div class="ships-creating__text">
-                <p class="ships-creating__info">Установите однопалубный корабль</p>
+                <div class="ships-creating__buttons">
+                    <div class="ships-creating__ship-btn" data-size="1">
+                        <div class="ships-creating__btn-block"></div>
+                        <span class="ships-creating__count">4</span>
+                    </div>
+                    <div class="ships-creating__ship-btn" data-size="2">
+                        <div class="ships-creating__btn-block"></div>
+                        <div class="ships-creating__btn-block"></div>
+                        <span class="ships-creating__count">3</span>
+                    </div>
+                    <div class="ships-creating__ship-btn" data-size="3">
+                        <div class="ships-creating__btn-block"></div>
+                        <div class="ships-creating__btn-block"></div>
+                        <div class="ships-creating__btn-block"></div>
+                        <span class="ships-creating__count">2</span>
+                    </div>
+                    <div class="ships-creating__ship-btn" data-size="4">
+                        <div class="ships-creating__btn-block"></div>
+                        <div class="ships-creating__btn-block"></div>
+                        <div class="ships-creating__btn-block"></div>
+                        <div class="ships-creating__btn-block"></div>
+                        <span class="ships-creating__count">1</span>
+                    </div>
+                </div>
                 <p class="ships-creating__question"><i class="far fa-question-circle"></i></p>
             </div>
         </div>
         <div class="game-wrapper">
-            <div class="game-box player">
+            <div class="game-box player pre-launch">
                 <div class="letters-col">
                     <span class="letters-col__item">A</span>
                     <span class="letters-col__item">B</span>

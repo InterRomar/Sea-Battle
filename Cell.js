@@ -12,7 +12,7 @@ class Cell {
     }
 
     // Определяем есть ли в клетках вокруг выбранной клетки корабли (количество клеток зависит от размера)
-    // Принимает два параметра (size, position); size - размер корабля от 1 до 4, position (1 | 0) 0 - вертикально, 1 - горизонтально 
+    // Принимает два параметра (size, position); size - размер корабля от singel | double | triple | quadruple, position (1 | 0) 0 - вертикально, 1 - горизонтально 
     checkZone(size, position, cells) {       
         let x = letters.indexOf(this.row);
         let y = +this.col;
@@ -24,16 +24,20 @@ class Cell {
         } else {
           position = 'horizontal';
         }
+        
+        
 
         
         
         // Проверяем каждый объект по координатам, не является ли он кораблём
         // Если хоть одна из клеток является кораблём, функция возвращает false, в противном случае true;
-        let result = coordinates[`${size}`][`${position}`].map(coordinates => {
+        let result = coordinates[size][position].map(coordinates => {
             let [x, y] = coordinates;
             if (!cells[`${letters[x]}${y}`]) {
                 return '';
             }
+
+            
             return cells[`${letters[x]}${y}`].isShip;
         }).filter(item => item !== '')
           .every((item) => item === false);
@@ -41,11 +45,6 @@ class Cell {
         return result;
     }
 
-    identifyShip(side) {
-      if (ships[side].filter(ship => ship.cells.includes(this))) {
-        return ships[side].filter(ship => ship.cells.includes(this))[0];
-      }
-    }
 }
 
 function getCoordinates(x, y) {

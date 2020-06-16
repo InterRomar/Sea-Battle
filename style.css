@@ -132,6 +132,18 @@ body {
     cursor: default;
 }
 
+.player.pre-launch .cell {
+    cursor: pointer;
+    transition: 0.15s ease-in;
+}
+.player.pre-launch .cell:hover {
+    background-color: rgb(164, 252, 164);
+}
+
+.player .cell.draw-ship:hover {
+    background-color: rgb(109, 224, 109);
+}
+
 .enemy .cell {
     cursor: pointer;
 }
@@ -142,6 +154,9 @@ body {
 }
 .cell.ship {
     background-color: rgb(247, 157, 83);
+}
+.cell.draw-ship {
+    background-color: rgb(109, 224, 109);
 }
 .enemy .cell.ship.hide {
     background: transparent;
@@ -252,4 +267,42 @@ body {
 
     font-family: 'Roboto';
     font-size: 25px;
+}
+.ships-creating__buttons {
+    margin-top: 20px;
+    padding-left: 20px;
+    padding-right: 50px;
+}
+
+.ships-creating__ship-btn {
+    display: flex;
+    border: none;
+    margin-bottom: 20px;
+    cursor: pointer;
+    
+    position: relative;
+}
+.ships-creating__ship-btn:hover .ships-creating__btn-block{
+    transform: scale(1.1);
+}
+.ships-creating__btn-block {
+    width: 30px;
+    height: 30px;
+    background-color: orange;
+    border: 1px solid black;
+    border-left: none;
+    transition: 0.1s ease-in;
+}
+.ships-creating__btn-block:first-child {
+    border-left: 1px solid black;
+}
+
+.ships-creating__count {
+    position: absolute;
+    right: -50px;
+    top: -2px;
+    font-family: 'Roboto';
+    font-size: 20px;
+    border: 1px dotted #333;
+    padding: 5px;
 }
