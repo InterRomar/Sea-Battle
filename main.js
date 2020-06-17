@@ -33,8 +33,13 @@ letters.forEach((letter, idx) => {
 // Отрисовка всех клеток-объектов
 fieldDrawing(playerCells, playerBox).then(() => {
     autoCreateBtn.addEventListener('click', () => {
+        ships.player = [];
+        Object.keys(playerCells).forEach(cell => {
+            playerCells[cell].isShip = false;
+        });
         createShips(playerCells, playerBox);
-        creatingFinish()
+        creatingFinish();
+        fieldDrawing(playerCells, playerBox);
     });
 });
 fieldDrawing(enemyCells, enemyBox).then(() => createShips(enemyCells, enemyBox));
@@ -236,8 +241,8 @@ function fieldClear(cells) {
 function createShips(cells, box) {
     createSingleShips(cells, box, 4);
     createDoubleShips(cells, box, 3);
-    // createTripleShips(cells, box, 2);
-    // createQuadrupleShip(cells, box);
+    createTripleShips(cells, box, 2);
+    createQuadrupleShip(cells, box);
 }
 
 
@@ -351,7 +356,7 @@ playerBox.addEventListener('click', (event) => {
                 }
                 break;
             case 2:
-                if (createDoubleShips(playerCells, playerBox, 2, event.dataset.id)) {
+                if (createDoubleShips(playerCells, playerBox, 2, event.dataset.id, 1)) {
                     isCreatingShip = false;
                     actualCreatingSize = 0;
                     success = true;
@@ -360,7 +365,7 @@ playerBox.addEventListener('click', (event) => {
                 }
                 break;
             case 3:
-                if (createTripleShips(playerCells, playerBox, 3, event.dataset.id)) {
+                if (createTripleShips(playerCells, playerBox, 3, event.dataset.id, 1)) {
                     isCreatingShip = false;
                     actualCreatingSize = 0;
                     success = true;
@@ -369,7 +374,7 @@ playerBox.addEventListener('click', (event) => {
                 }
                 break;
             case 4:
-                if (createQuadrupleShip(playerCells, playerBox, 4, event.dataset.id)) {
+                if (createQuadrupleShip(playerCells, playerBox, 4, event.dataset.id, 1)) {
                     isCreatingShip = false;
                     actualCreatingSize = 0;
                     success = true;
@@ -396,6 +401,92 @@ playerBox.addEventListener('click', (event) => {
 
 
     }
+});
+
+
+playerBox.addEventListener('dblclick', (event) => {
+    event = event.target;
+    if (!event.classList.contains('ship')) return;
+
+    let ship = playerCells[event.dataset.id].identifyShip('player');
+    if (ship.size === 'single') {
+        gameStatus.innerHTML = 'Однопалубный корабль нельзя перевернуть';
+        return;
+    }
+
+    let mainCell = ship.cells[0];
+
+    let reversePosition; 
+    if (ship.position === 'vertical') {
+        reversePosition = 1
+    } else {
+        reversePosition = 0
+    }
+
+    ships.player = ships.player.filter(s => s.cells[0].id !== mainCell.id);
+    ship.cells.map(cell => cell.isShip = false);
+    
+
+    switch (ship.size) {
+        case 'double':
+            if (createDoubleShips(playerCells, playerBox, 1, mainCell.id, reversePosition)) {  
+                gameStatus.innerHTML = 'Корабль успешно перевёрнут';
+                return;
+            } else {
+                let position;
+                if (ship.position === 'vertical') position = 0;
+                else position = 1;
+                createDoubleShips(playerCells, playerBox, 1, mainCell.id, position);
+                gameStatus.innerHTML = 'В данном месте нельзя перевернуть корабль.';
+            }
+            break;
+        case 'triple':
+            if (createTripleShips(playerCells, playerBox, 1, mainCell.id, reversePosition)) { 
+                gameStatus.innerHTML = 'Корабль успешно перевёрнут';
+                return; 
+            } else {
+                let position;
+                if (ship.position === 'vertical') position = 0;
+                else position = 1;
+                createDoubleShips(playerCells, playerBox, 1, mainCell.id, position);
+                gameStatus.innerHTML = 'В данном месте нельзя перевернуть корабль.';
+            }
+            break;
+        case 'quadruple':
+            if (createQuadrupleShip(playerCells, playerBox, 1, mainCell.id, reversePosition)) {
+                gameStatus.innerHTML = 'Корабль успешно перевёрнут';
+                return;  
+            } else {
+                let position;
+                if (ship.position === 'vertical') position = 0;
+                else position = 1;
+                createDoubleShips(playerCells, playerBox, 1, mainCell.id, position);
+                gameStatus.innerHTML = 'В данном месте нельзя перевернуть корабль.';
+            }
+            break;
+    
+        default:
+            break;
+    } 
+});
+
+playerBox.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+    event = event.target;
+    if (!event.classList.contains('ship')) return;
+
+    let ship = playerCells[event.dataset.id].identifyShip('player');
+    mainCell = ship.cells[0];
+    
+    ships.player = ships.player.filter(s => s.cells[0].id !== mainCell.id);
+    ship.cells.map(cell => cell.isShip = false);
+
+    fieldDrawing(playerCells, playerBox);
+
+    let sizes = ['single', 'double', 'triple', 'quadruple'];
+    let size = sizes.indexOf(ship.size) + 1;
+    let span = creatingCountSpans.find(btn => btn.parentNode.dataset.size === String(size));   
+    span.innerHTML = Number(span.innerHTML) + 1;    
 });
 
 

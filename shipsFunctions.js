@@ -3,7 +3,10 @@ function createSingleShips(cells, box, times, selectedCell) {
     let count = 0;
     let size = 'single';
     let cellsArr = [];    
-    ships[`${cells[side].toString()}`] = [];
+    
+    if (!ships[`${cells[side].toString()}`]) {
+        ships[`${cells[side].toString()}`] = [];
+    }
     
     
     
@@ -41,7 +44,7 @@ function createSingleShips(cells, box, times, selectedCell) {
     return true;
 }
 
-function createDoubleShips(cells, box, times, selectedCell) {
+function createDoubleShips(cells, box, times, selectedCell, position) {
     let count = 0;
     let size = 'double';
     let cellsArr = [];
@@ -53,29 +56,33 @@ function createDoubleShips(cells, box, times, selectedCell) {
     while (count !== times) {           // Рисуем 3 корабля
 
         let cell;
-        let position;
+
         if (!selectedCell) {
             cell = getRandomCell();       // Получаем рандомную клетку
-            position = getRandom(2);        // Рандомное положение (0 - вертикальное, 1 - горизонтальное)
+            
         } else {
             cell = selectedCell;
-            position = 1;
+            
         }
+
+        if (position === undefined) {
+            position = getRandom(2);            
+        }      
+
         let letter = cell[0];                 // Буква клетки
         let number = cell.match(/\d/gi).join('');     // № Клетки 
         let letterIndex = letters.indexOf(letter);
         
         if (cells[side] === 'player' && selectedCell) {        
-            if (!cells[`${cell}`].checkZone(size, 0, cells)) {
+            if (!cells[`${cell}`].checkZone(size, position, cells)) {
                 console.log('в этом месте установить нельзя');
-                return;     // alert с сообщением
+                return;     // alert с сообщением                
             }
         }
 
-
         if (cells[`${cell}`].checkZone(size, position, cells)) {         // Если вокруг клетки нет кораблей, рисуем, если есть - то новая итерация
             // Если вертикальный, сразу проверяем хватит ли клеток вниз (чтобы не упереться в конец поля)
-            if (position === 0 && (Number(number) + 1) <= 10 ) {       
+            if (position === 0 && (Number(number) + 1) <= 10 ) {                       
                 cells[`${cell}`].isShip = true;       // Выбранная клетка становится кораблём
                 cells[`${cell}`].size = 2;            // В объект записывается размер корабля
                 cells[`${letter + (Number(number) + 1)}`].isShip = true;    // Нужное количество клеток вниз так же становится кораблём (в зависимости от размера корабля)
@@ -86,7 +93,7 @@ function createDoubleShips(cells, box, times, selectedCell) {
                 cellsArr = [];
                 count++;
             // Если горизонтальный, сразу проверяем хватит ли клеток вправо (чтобы не упереться в конец поля)
-            } else if (position === 1 && letters[letterIndex + 1]) {
+            } else if (position === 1 && letters[letterIndex + 1]) {                
                 cells[`${cell}`].isShip = true;   // Выбранная клетка становится кораблём
                 cells[`${cell}`].size = 2;
                 cells[`${letters[letterIndex + 1]}${number}`].isShip = true;     // Нужное количество клеток вправо так же становится кораблём (в зависимости от размера корабля)
@@ -102,10 +109,11 @@ function createDoubleShips(cells, box, times, selectedCell) {
         }
                 
         fieldDrawing(cells, box);     
-        return true;
+        if (selectedCell) return true;
     }
+    
 }
-function createTripleShips(cells, box, times, selectedCell) {
+function createTripleShips(cells, box, times, selectedCell, position) {
     let count = 0;
     let size = 'triple';
     let cellsArr = [];
@@ -117,25 +125,26 @@ function createTripleShips(cells, box, times, selectedCell) {
     while (count !== times) {
         
         let cell;
-        let position;
         if (!selectedCell) {
             cell = getRandomCell();       // Получаем рандомную клетку
-            position = getRandom(2);        // Рандомное положение (0 - вертикальное, 1 - горизонтальное)
         } else {
             cell = selectedCell;
-            position = 1;
         }
         
+        if (position === undefined) {
+            position = getRandom(2);            
+        } 
+
         let letter = cell[0];
         let number = cell.match(/\d/gi).join('');
         let letterIndex = letters.indexOf(letter);
 
-        // if (cells[side] === 'player') {        
-        //     if (!cells[`${cell}`].checkZone(size, 0, cells)) {
-        //         console.log('в этом месте установить нельзя');
-        //         return;     // alert с сообщением
-        //     }
-        // }
+        if (cells[side] === 'player' && selectedCell) {        
+            if (!cells[`${cell}`].checkZone(size, position, cells)) {
+                console.log('в этом месте установить нельзя');
+                return;     // alert с сообщением
+            }
+        }
         
         if (cells[`${cell}`].checkZone(size, position,cells)) {
             if (position === 0 && (Number(number) + 2) <= 10 ) {                
@@ -170,10 +179,10 @@ function createTripleShips(cells, box, times, selectedCell) {
     
         
         fieldDrawing(cells, box);  
-        return true;   
+        if (selectedCell) return true;   
     }
 }
-function createQuadrupleShip(cells, box, times, selectedCell) {
+function createQuadrupleShip(cells, box, times, selectedCell, position) {
     let count = 0;
     let size = 'quadruple';
     let cellsArr = [];
@@ -184,20 +193,22 @@ function createQuadrupleShip(cells, box, times, selectedCell) {
     
     while (count !== 1) {
         let cell;
-        let position;
         if (!selectedCell) {
             cell = getRandomCell();       // Получаем рандомную клетку
-            position = getRandom(2);        // Рандомное положение (0 - вертикальное, 1 - горизонтальное)
         } else {
             cell = selectedCell;
-            position = 1;
         }
+
+        if (position === undefined) {
+            position = getRandom(2);            
+        } 
+
         let letter = cell[0];
         let number = cell.match(/\d/gi).join('');
         let letterIndex = letters.indexOf(letter);
 
-        if (cells[side] === 'player') {        
-            if (!cells[`${cell}`].checkZone(size, 0, cells)) {
+        if (cells[side] === 'player' && selectedCell) {        
+            if (!cells[`${cell}`].checkZone(size, position, cells)) {
                 console.log('в этом месте установить нельзя');
                 return;     // alert с сообщением
             }
@@ -241,6 +252,6 @@ function createQuadrupleShip(cells, box, times, selectedCell) {
         
         
         fieldDrawing(cells, box);  
-        return true;   
+        if (selectedCell) return true;   
     }
 }

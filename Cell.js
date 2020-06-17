@@ -45,6 +45,8 @@ class Cell {
         return result;
     }
 
+
+
     identifyShip(side) {
       if (ships[side].filter(ship => ship.cells.includes(this))) {
         return ships[side].filter(ship => ship.cells.includes(this))[0];
