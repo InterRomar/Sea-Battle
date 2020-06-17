@@ -16,7 +16,7 @@
         <div class="ships-creating">
             <button class="ships-creating__btn" id='auto-create-btn'>Расставить корабли автоматически</button>
             <div class="ships-creating__text">
-                <div class="ships-creating__buttons">
+                <div class="ships-creating__buttons" id="ships-creating__buttons">
                     <div class="ships-creating__ship-btn" data-size="1">
                         <div class="ships-creating__btn-block"></div>
                         <span class="ships-creating__count">4</span>
@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="game-wrapper">
-            <div class="game-box player pre-launch">
+            <div class="game-box player pre-launch" id='player'>
                 <div class="letters-col">
                     <span class="letters-col__item">A</span>
                     <span class="letters-col__item">B</span>
@@ -73,7 +73,7 @@
                     Ваше поле
                 </span>
             </div>
-            <div class="game-box enemy">
+            <div class="game-box enemy" id='enemy'>
                 <div class="letters-col">
                     <span class="letters-col__item">A</span>
                     <span class="letters-col__item">B</span>

@@ -1,15 +1,12 @@
-const playerBox = document.querySelectorAll('.game-box')[0];
-const enemyBox = document.querySelectorAll('.game-box')[1];
+const playerBox = document.getElementById('player');
+const enemyBox = document.getElementById('enemy');
 const gameStatus = document.querySelector('.game-status');
 const autoCreateBtn = document.getElementById('auto-create-btn');
 
 
-
-let start = document.getElementById('start');
-
-let letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
-let playerCells = {};
-let enemyCells = {};
+const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
+const playerCells = {};
+const enemyCells = {};
 
 let side = Symbol();
 playerCells[side] = 'player';
@@ -20,8 +17,26 @@ let isShipPlaced = false;
 
 const ENEMY_DELAY = 1000;  // Задержка, с которой ai будет выполнять действия (в ms)
 
+const customCreateButtons = document.getElementById('ships-creating__buttons');
+let creatingCountSpans = Array.from(document.querySelectorAll('.ships-creating__count'));
+let isCreationStage = true;
+let isCreatingShip = false;
+let actualCreatingSize;
+
+let shipsCreatingCount = {
+    single: 4,
+    double: 3,
+    triple: 2,
+    quadruple: 1,
+
+    getSum() {
+        return this.single + this.double + this.triple + this.quadruple;
+    }
+}
+
+
 // Создание массива объектов cells
-letters.forEach((letter, idx) => {
+letters.forEach((letter) => {
     for (let i = 1; i <= 10; i++) {
         playerCells[`${letter}${i}`] = new Cell(letter, String(i));
         enemyCells[`${letter}${i}`] = new Cell(letter, String(i));
@@ -266,22 +281,7 @@ function rightHit(x, y, cells) {
 
 }
 
-const customCreateButtons = document.querySelector('.ships-creating__buttons');
-let creatingCountSpans = Array.from(document.querySelectorAll('.ships-creating__count'));
-let isCreationStage = true;
-let isCreatingShip = false;
-let actualCreatingSize;
 
-let shipsCreatingCount = {
-    single: 4,
-    double: 3,
-    triple: 2,
-    quadruple: 1,
-
-    getSum() {
-        return this.single + this.double + this.triple + this.quadruple;
-    }
-}
 
 customCreateButtons.addEventListener('click', (event) => {
     event = event.target;
@@ -396,6 +396,7 @@ playerBox.addEventListener('dblclick', (event) => {
 
     ships.player = ships.player.filter(s => s.cells[0].id !== mainCell.id);
     ship.cells.map(cell => cell.isShip = false);
+    let position;
     
 
     switch (ship.size) {
@@ -403,38 +404,37 @@ playerBox.addEventListener('dblclick', (event) => {
             if (createDoubleShips(playerCells, playerBox, 1, mainCell.id, reversePosition)) {  
                 gameStatus.innerHTML = 'Корабль успешно перевёрнут';
                 return;
-            } else {
-                let position;
-                if (ship.position === 'vertical') position = 0;
-                else position = 1;
-                createDoubleShips(playerCells, playerBox, 1, mainCell.id, position);
-                gameStatus.innerHTML = 'В данном месте нельзя перевернуть корабль.';
             }
-            break;
+
+            
+            if (ship.position === 'vertical') position = 0;
+            else position = 1;
+            createDoubleShips(playerCells, playerBox, 1, mainCell.id, position);
+            gameStatus.innerHTML = 'В данном месте нельзя перевернуть корабль.';
+            return;
+
         case 'triple':
             if (createTripleShips(playerCells, playerBox, 1, mainCell.id, reversePosition)) { 
                 gameStatus.innerHTML = 'Корабль успешно перевёрнут';
                 return; 
-            } else {
-                let position;
-                if (ship.position === 'vertical') position = 0;
-                else position = 1;
-                createDoubleShips(playerCells, playerBox, 1, mainCell.id, position);
-                gameStatus.innerHTML = 'В данном месте нельзя перевернуть корабль.';
             }
-            break;
+
+            if (ship.position === 'vertical') position = 0;
+            else position = 1;
+            createDoubleShips(playerCells, playerBox, 1, mainCell.id, position);
+            gameStatus.innerHTML = 'В данном месте нельзя перевернуть корабль.';
+            return;
         case 'quadruple':
             if (createQuadrupleShip(playerCells, playerBox, 1, mainCell.id, reversePosition)) {
                 gameStatus.innerHTML = 'Корабль успешно перевёрнут';
                 return;  
-            } else {
-                let position;
-                if (ship.position === 'vertical') position = 0;
-                else position = 1;
-                createDoubleShips(playerCells, playerBox, 1, mainCell.id, position);
-                gameStatus.innerHTML = 'В данном месте нельзя перевернуть корабль.';
             }
-            break;
+            if (ship.position === 'vertical') position = 0;
+            else position = 1;
+            createDoubleShips(playerCells, playerBox, 1, mainCell.id, position);
+            gameStatus.innerHTML = 'В данном месте нельзя перевернуть корабль.';
+            
+            return;
     
         default:
             break;
