@@ -58,27 +58,30 @@ letters.forEach((letter) => {
 
 
 // Отрисовка всех клеток-объектов
-fieldDrawing(playerCells, playerBox).then(() => {
-    autoCreateBtn.addEventListener('click', () => {
-        ships.player = [];
-        Object.keys(playerCells).forEach(cell => {
-            playerCells[cell].isShip = false;
-        });
-        createShips(playerCells, playerBox);
-        creatingFinish();
-        fieldDrawing(playerCells, playerBox);
-    });
-});
-fieldDrawing(enemyCells, enemyBox).then(() => createShips(enemyCells, enemyBox));
+fieldDrawing(playerCells, playerBox);
+fieldDrawing(enemyCells, enemyBox);
 
-enemyBox.addEventListener('click', async (event) => {
+createShips(enemyCells, enemyBox)
+
+autoCreateBtn.addEventListener('click', () => {
+    ships.player = [];
+    Object.keys(playerCells).forEach(cell => {
+        playerCells[cell].isShip = false;
+    });
+    createShips(playerCells, playerBox);
+    creatingFinish();
+    fieldDrawing(playerCells, playerBox);
+});
+
+
+enemyBox.addEventListener('click', (event) => {
     if (!isShipPlaced) {
         gameStatus.innerHTML = 'Для начала установите корабли';
         return;
     }
 
     if (event.target.classList.contains(CLASS_NAMES.cell)) {
-        let success = await cellClick(event.target);
+        let success = cellClick(event.target);
         if (success === undefined) return
         
 
@@ -93,7 +96,7 @@ enemyBox.addEventListener('click', async (event) => {
         }  
                
     }
-} )
+});
 
 enemyBox.addEventListener('mouseover', (event) => {
     if (event.target.classList.contains(CLASS_NAMES.cell)) {
@@ -106,24 +109,31 @@ enemyBox.addEventListener('mouseout', (event) => {
     }
 });
 
+function delay(ms) {
+    return new Promise(res => {
+        setTimeout(() => {
+            res();
+        }, ms)
+    });
+}
 
 async function enemyShot() {
     let success;
-    setTimeout(async () => {
-        success = await clickEmulation(playerCells);
-    }, ENEMY_DELAY);
+    
+    await delay(ENEMY_DELAY);
+    success = await clickEmulation(playerCells);
+    
 
     if (isLastShip('player')) {
         return loosing();            
     }
     
-    setTimeout(() => {
-        if (success) {
-            return enemyShot();
-        }
-        enemyBox.classList.remove(CLASS_NAMES.blocked);
-        gameStatus.innerHTML = 'Ваш ход!'
-    }, ENEMY_DELAY);
+    await delay(ENEMY_DELAY);
+    if (success) {
+        return enemyShot();
+    }
+    enemyBox.classList.remove(CLASS_NAMES.blocked);
+    gameStatus.innerHTML = 'Ваш ход!'
     
 }
 
@@ -150,35 +160,33 @@ function loosing() {
 function fieldDrawing(cells, box, success) {   
     
     fieldClear(cells);    
-
-    return new Promise(resolve => {
-        letters.forEach((letter) => {
-            let row = document.createElement('div');
-            Object.keys(cells).filter(key => cells[key].row === letter).forEach(key => {
-                let cell = document.createElement('div');
-                cell.classList.add(CLASS_NAMES.cell);
-                if (cells[key].isShip) {
-                    cell.classList.add(CLASS_NAMES.ship);
-                }
-                if (cells[key].isMissed) {
-                    cell.classList.add(CLASS_NAMES.missed);
-                }
-                if (cells[key].isExploded) {
-                    cell.classList.add(CLASS_NAMES.exploded);
-                }
-                if (cells[key].isHide) {
-                    cell.classList.add(CLASS_NAMES.hide);
-                }
-                cell.dataset.id = key;
-                row.appendChild(cell);
-            });
-            row.classList.add(CLASS_NAMES.row);
-            row.dataset.id = letter;
-            box.append(row);
+    
+    letters.forEach((letter) => {
+        let row = document.createElement('div');
+        Object.keys(cells).filter(key => cells[key].row === letter).forEach(key => {
+            let cell = document.createElement('div');
+            cell.classList.add(CLASS_NAMES.cell);
+            if (cells[key].isShip) {
+                cell.classList.add(CLASS_NAMES.ship);
+            }
+            if (cells[key].isMissed) {
+                cell.classList.add(CLASS_NAMES.missed);
+            }
+            if (cells[key].isExploded) {
+                cell.classList.add(CLASS_NAMES.exploded);
+            }
+            if (cells[key].isHide) {
+                cell.classList.add(CLASS_NAMES.hide);
+            }
+            cell.dataset.id = key;
+            row.appendChild(cell);
         });
-
-        resolve(success);
+        row.classList.add(CLASS_NAMES.row);
+        row.dataset.id = letter;
+        box.append(row);
     });
+
+    return (success)
 }
 
 
@@ -234,7 +242,7 @@ function clickEmulation(cells) {
        return clickEmulation(cells);
     }
     
-    return cellClick(findCellById(cell, cells[side].toString()), playerCells);
+    return cellClick(findCellById(cell, cells[side]), playerCells);
 }
 
 // Функция очистки поля
