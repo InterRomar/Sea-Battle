@@ -2,6 +2,8 @@ const playerBox = document.getElementById('player');
 const enemyBox = document.getElementById('enemy');
 const gameStatus = document.querySelector('.game-status');
 const autoCreateBtn = document.getElementById('auto-create-btn');
+const customCreateButtons = document.getElementById('ships-creating__buttons');
+let creatingCountSpans = Array.from(document.querySelectorAll('.ships-creating__count'));
 
 
 const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
@@ -13,17 +15,15 @@ playerCells[side] = 'player';
 enemyCells[side] = 'enemy';
 
 let ships = {};
+
 let isShipPlaced = false;
-
-const ENEMY_DELAY = 1000;  // Задержка, с которой ai будет выполнять действия (в ms)
-
-const customCreateButtons = document.getElementById('ships-creating__buttons');
-let creatingCountSpans = Array.from(document.querySelectorAll('.ships-creating__count'));
 let isCreationStage = true;
 let isCreatingShip = false;
 let actualCreatingSize;
 
-let shipsCreatingCount = {
+const ENEMY_DELAY = 1000;  // Задержка, с которой ai будет выполнять действия (в ms)
+
+const shipsCreatingCount = {
     single: 4,
     double: 3,
     triple: 2,
@@ -32,6 +32,18 @@ let shipsCreatingCount = {
     getSum() {
         return this.single + this.double + this.triple + this.quadruple;
     }
+}
+
+const CLASS_NAMES = {
+    cell: 'cell',
+    ship: 'ship',
+    missed: 'missed',
+    exploded: 'exploded',
+    blocked: 'blocked',
+    hide: 'hide',
+    hover: 'hover',
+    row: 'row',
+    preLaunch: 'pre-launch'
 }
 
 
@@ -65,7 +77,7 @@ enemyBox.addEventListener('click', async (event) => {
         return;
     }
 
-    if (event.target.classList.contains('cell')) {
+    if (event.target.classList.contains(CLASS_NAMES.cell)) {
         let success = await cellClick(event.target);
         if (success === undefined) return
         
@@ -75,7 +87,7 @@ enemyBox.addEventListener('click', async (event) => {
         }
 
         if (!success) {
-            enemyBox.classList.add('blocked');
+            enemyBox.classList.add(CLASS_NAMES.blocked);
             gameStatus.innerHTML = 'Ход соперника!';
             return enemyShot();
         }  
@@ -84,13 +96,13 @@ enemyBox.addEventListener('click', async (event) => {
 } )
 
 enemyBox.addEventListener('mouseover', (event) => {
-    if (event.target.classList.contains('cell')) {
-        event.target.classList.add('hover');
+    if (event.target.classList.contains(CLASS_NAMES.cell)) {
+        event.target.classList.add(CLASS_NAMES.hover);
     }
 });
 enemyBox.addEventListener('mouseout', (event) => {
-    if (event.target.classList.contains('hover')) {
-        event.target.classList.remove('hover');
+    if (event.target.classList.contains(CLASS_NAMES.hover)) {
+        event.target.classList.remove(CLASS_NAMES.hover);
     }
 });
 
@@ -109,7 +121,7 @@ async function enemyShot() {
         if (success) {
             return enemyShot();
         }
-        enemyBox.classList.remove('blocked');
+        enemyBox.classList.remove(CLASS_NAMES.blocked);
         gameStatus.innerHTML = 'Ваш ход!'
     }, ENEMY_DELAY);
     
@@ -121,15 +133,15 @@ function isLastShip(side) {
 
 function victory() {
     gameStatus.innerHTML = 'Вы Победили!';
-    enemyBox.classList.add('blocked');
-    playerBox.classList.add('blocked');
+    enemyBox.classList.add(CLASS_NAMES.blocked);
+    playerBox.classList.add(CLASS_NAMES.blocked);
 
 }
 
 function loosing() {
     gameStatus.innerHTML = 'Вы проиграли!';
-    playerBox.classList.add('blocked');
-    enemyBox.classList.add('blocked');
+    playerBox.classList.add(CLASS_NAMES.blocked);
+    enemyBox.classList.add(CLASS_NAMES.blocked);
 }
 
 
@@ -144,23 +156,23 @@ function fieldDrawing(cells, box, success) {
             let row = document.createElement('div');
             Object.keys(cells).filter(key => cells[key].row === letter).forEach(key => {
                 let cell = document.createElement('div');
-                cell.classList.add('cell');
+                cell.classList.add(CLASS_NAMES.cell);
                 if (cells[key].isShip) {
-                    cell.classList.add('ship');
+                    cell.classList.add(CLASS_NAMES.ship);
                 }
                 if (cells[key].isMissed) {
-                    cell.classList.add('missed');
+                    cell.classList.add(CLASS_NAMES.missed);
                 }
                 if (cells[key].isExploded) {
-                    cell.classList.add('exploded');
+                    cell.classList.add(CLASS_NAMES.exploded);
                 }
                 if (cells[key].isHide) {
-                    cell.classList.add('hide');
+                    cell.classList.add(CLASS_NAMES.hide);
                 }
                 cell.dataset.id = key;
                 row.appendChild(cell);
             });
-            row.classList.add('row');
+            row.classList.add(CLASS_NAMES.row);
             row.dataset.id = letter;
             box.append(row);
         });
@@ -308,7 +320,7 @@ playerBox.addEventListener('click', (event) => {
 
     if (isCreationStage) {
         event = event.target;        
-        if (!event.classList.contains('cell')) return;
+        if (!event.classList.contains(CLASS_NAMES.cell)) return;
 
         let success = false;
 
@@ -377,7 +389,7 @@ playerBox.addEventListener('click', (event) => {
 
 playerBox.addEventListener('dblclick', (event) => {
     event = event.target;
-    if (!event.classList.contains('ship')) return;
+    if (!event.classList.contains(CLASS_NAMES.ship)) return;
 
     let ship = playerCells[event.dataset.id].identifyShip('player');
     if (ship.size === 'single') {
@@ -444,7 +456,7 @@ playerBox.addEventListener('dblclick', (event) => {
 playerBox.addEventListener('contextmenu', (event) => {
     event.preventDefault();
     event = event.target;
-    if (!event.classList.contains('ship')) return;
+    if (!event.classList.contains(CLASS_NAMES.ship)) return;
 
     let ship = playerCells[event.dataset.id].identifyShip('player');
     mainCell = ship.cells[0];
@@ -466,9 +478,9 @@ function creatingFinish() {
     autoCreateBtn.disabled = true;
     isShipPlaced = true;
     isCreationStage = false;
-    playerBox.classList.remove('pre-launch');
+    playerBox.classList.remove(CLASS_NAMES.preLaunch);
     creatingCountSpans.forEach(span => span.innerHTML = '0')
-    customCreateButtons.classList.add('blocked');
+    customCreateButtons.classList.add(CLASS_NAMES.blocked);
 }
 
 
