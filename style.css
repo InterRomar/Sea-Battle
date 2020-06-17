@@ -226,10 +226,10 @@ body {
 
 
 .enemy .cell.ship.hide {
-    /* background: transparent; */
+    background: transparent;
 }
 .enemy .cell.hide::before {
-    /* background-color: rgb(124, 199, 209); */
+    background-color: rgb(124, 199, 209);
 }
 
 
