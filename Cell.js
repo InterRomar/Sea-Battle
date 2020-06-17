@@ -25,10 +25,6 @@ class Cell {
           position = 'horizontal';
         }
         
-        
-
-        
-        
         // Проверяем каждый объект по координатам, не является ли он кораблём
         // Если хоть одна из клеток является кораблём, функция возвращает false, в противном случае true;
         let result = coordinates[size][position].map(coordinates => {

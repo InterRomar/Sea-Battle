@@ -44,17 +44,6 @@ fieldDrawing(playerCells, playerBox).then(() => {
 });
 fieldDrawing(enemyCells, enemyBox).then(() => createShips(enemyCells, enemyBox));
 
-
-
-function getCellCoordinates(cell) {
-        
-    return {
-        x: letters.indexOf(cell.row),
-        y: Number(cell.col)
-    };
-}
-
-
 enemyBox.addEventListener('click', async (event) => {
     if (!isShipPlaced) {
         gameStatus.innerHTML = 'Для начала установите корабли';
@@ -136,21 +125,21 @@ function fieldDrawing(cells, box, success) {
     fieldClear(cells);    
 
     return new Promise(resolve => {
-        letters.forEach((letter, idx) => {
+        letters.forEach((letter) => {
             let row = document.createElement('div');
-            Object.keys(cells).filter(key => cells[`${key}`].row === letter).forEach(key => {
+            Object.keys(cells).filter(key => cells[key].row === letter).forEach(key => {
                 let cell = document.createElement('div');
                 cell.classList.add('cell');
-                if (cells[`${key}`].isShip) {
+                if (cells[key].isShip) {
                     cell.classList.add('ship');
                 }
-                if (cells[`${key}`].isMissed) {
+                if (cells[key].isMissed) {
                     cell.classList.add('missed');
                 }
-                if (cells[`${key}`].isExploded) {
+                if (cells[key].isExploded) {
                     cell.classList.add('exploded');
                 }
-                if (cells[`${key}`].isHide) {
+                if (cells[key].isHide) {
                     cell.classList.add('hide');
                 }
                 cell.dataset.id = key;
@@ -174,7 +163,7 @@ function cellClick(event, cells = enemyCells) {
         
     }
    
-    let cell = cells[`${event.dataset.id}`];
+    let cell = cells[event.dataset.id];
     
     if (cell.isMissed || cell.isExploded) {
         console.log(`repeat click, return null `);
@@ -276,24 +265,6 @@ function rightHit(x, y, cells) {
     }
 
 }
-
-
-
-
-function getRandomCell() {
-    const letter = letters[Math.floor(Math.random() * Math.floor(10))];
-    const number = String(Math.floor(Math.random() * Math.floor(11)));
-    if (number !== '0') {
-        return letter + number;
-    } 
-    return getRandomCell();
-}
-
-function getRandom(max) {
-    return Math.floor(Math.random() * Math.floor(max));
-}
-
-
 
 const customCreateButtons = document.querySelector('.ships-creating__buttons');
 let creatingCountSpans = Array.from(document.querySelectorAll('.ships-creating__count'));
@@ -499,3 +470,26 @@ function creatingFinish() {
     creatingCountSpans.forEach(span => span.innerHTML = '0')
     customCreateButtons.classList.add('blocked');
 }
+
+
+function getCellCoordinates(cell) {
+        
+    return {
+        x: letters.indexOf(cell.row),
+        y: Number(cell.col)
+    };
+}
+
+function getRandomCell() {
+    const letter = letters[Math.floor(Math.random() * Math.floor(10))];
+    const number = String(Math.floor(Math.random() * Math.floor(11)));
+    if (number !== '0') {
+        return letter + number;
+    } 
+    return getRandomCell();
+}
+
+function getRandom(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+}
+
